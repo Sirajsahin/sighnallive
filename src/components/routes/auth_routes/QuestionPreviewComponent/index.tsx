@@ -2,9 +2,6 @@ import { useQuestionPreviewAPI } from "@/app/hooks/api_hooks/Group/useQuestionPr
 import { useSurveyDetailsAPI } from "@/app/hooks/api_hooks/Group/useSurveyDetailsAPI";
 import { useOrganizationDetailsAPI } from "@/app/hooks/api_hooks/user/useOrganizationDetailsAPI";
 import { useEffect, useState } from "react";
-import { CiMobile1 } from "react-icons/ci";
-import { MdOutlineKeyboardBackspace } from "react-icons/md";
-import { SlScreenDesktop } from "react-icons/sl";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ImagePreviewComponent from "./ImagePreviewComponent";
 import MultipleOptionComponent from "./MultipleOptionComponent";
@@ -33,6 +30,20 @@ const QuestionPreviewComponent = () => {
   const toggleExpansion = () => {
     setIsExpanded(!isExpanded);
   };
+
+  useEffect(() => {
+    // Detect if the device is mobile or not
+    const userAgent = navigator.userAgent || navigator.vendor;
+    if (
+      /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+        userAgent
+      )
+    ) {
+      setPrevFlage(false);
+    } else {
+      setPrevFlage(true);
+    }
+  }, []);
 
   useEffect(() => {
     const survey_id = params.get("survey_id");
@@ -98,37 +109,15 @@ const QuestionPreviewComponent = () => {
     fetchOrganizationDetailsAPI();
   }, []);
 
-  const handelBack = () => {
-    navigate(
-      `/app/campaign/create-survey?step_id=3&group_id=${params.get("group_id")}&survey_id=${params.get("survey_id")}`
-    );
+  const handelSubmit = () => {
+    navigate(`/thankyou`);
   };
-  console.log(currentQuestionIndex, "currentQuestionIndex");
+
   return (
     <div className="">
       <div className="grid-cols-3 grid items-center border-b  pb-4 ">
-        <div className=" flex items-center gap-3 font-bold cursor-pointer">
-          <button
-            type="submit"
-            className="w-auto justify-center flex items-center gap-1 rounded-md bg-white text-[#333333]  px-4 py-2 text-sm font-medium"
-            onClick={() => handelBack()}
-          >
-            <MdOutlineKeyboardBackspace className="w-4 h-4" />
-            Back
-          </button>
-        </div>
-        <div className="flex items-center justify-center">
-          <div className="flex items-center  bg-black w-[100px] justify-center p-2 rounded-lg gap-4">
-            <SlScreenDesktop
-              className={`w-6 h-6 fill-white cursor-pointer p-1 rounded-md ${prevFlage && "bg-white bg-opacity-20 "}`}
-              onClick={() => setPrevFlage(true)}
-            />
-            <CiMobile1
-              className={`w-6 h-6 fill-white cursor-pointer p-1 rounded-md ${!prevFlage && "bg-white bg-opacity-20 "}`}
-              onClick={() => setPrevFlage(false)}
-            />
-          </div>
-        </div>
+        <div className=" flex items-center gap-3 font-bold cursor-pointer"></div>
+
         <div></div>
       </div>
       {prevFlage ? (
@@ -183,8 +172,15 @@ const QuestionPreviewComponent = () => {
                     Back
                   </button>
                 )}
-                {prevQuestionDetails?.length ===
-                currentQuestionIndex + 1 ? null : (
+                {prevQuestionDetails?.length === currentQuestionIndex + 1 ? (
+                  <button
+                    type="submit"
+                    onClick={handelSubmit}
+                    className="inline-flex justify-center rounded-md bg-[#333333] px-4 py-2 text-sm font-semibold text-white cursor-pointer border-transparent"
+                  >
+                    Submit
+                  </button>
+                ) : (
                   <button
                     type="submit"
                     onClick={handleContinue}
@@ -261,8 +257,15 @@ const QuestionPreviewComponent = () => {
                       Back
                     </button>
                   )}
-                  {prevQuestionDetails?.length ===
-                  currentQuestionIndex + 1 ? null : (
+                  {prevQuestionDetails?.length === currentQuestionIndex + 1 ? (
+                    <button
+                      type="submit"
+                      onClick={handelSubmit}
+                      className="inline-flex justify-center rounded-md bg-[#333333] px-4 py-2 text-sm font-semibold text-white cursor-pointer border-transparent"
+                    >
+                      Submit
+                    </button>
+                  ) : (
                     <button
                       type="submit"
                       onClick={handleContinue}

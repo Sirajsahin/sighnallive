@@ -1,11 +1,15 @@
-import { Outlet } from "react-router-dom";
-import UIContainer from "./components/ui/UIContainer";
+// App.tsx
+import { Routes, Route } from "react-router-dom";
+import QuestionPreviewComponent from "./components/routes/auth_routes/QuestionPreviewComponent";
+import ThankyouPage from "./components/routes/auth_routes/ThankyouPage";
+
 function App() {
   return (
     <div>
-      <UIContainer>
-        <Outlet />
-      </UIContainer>
+      <Routes>
+        <Route path="/" element={<QuestionPreviewComponent />} />
+        <Route path="/thankyou" element={<ThankyouPage />} />
+      </Routes>
     </div>
   );
 }

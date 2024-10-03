@@ -1,6 +1,6 @@
 const ThankyouPage = () => {
   return (
-    <div className="h-[80vh] flex items-center justify-center">
+    <div className="h-[80vh] flex items-center justify-center p-3">
       <div className="flex  flex-col items-center gapo-5">
         <div>
           <svg
@@ -119,8 +119,8 @@ const ThankyouPage = () => {
             </defs>
           </svg>
         </div>
-        <h2 className="font-bold text-base mt-10">Thank you</h2>
-        <p className="text-sm mt-3">
+        <h2 className="font-bold text-base mt-10 text-center">Thank you</h2>
+        <p className="text-sm mt-3 text-center">
           Thanks for your spending your time about your experience and valuable
           feedback :
         </p>
