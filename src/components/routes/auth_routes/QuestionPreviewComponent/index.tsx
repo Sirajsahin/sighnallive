@@ -1,7 +1,5 @@
 import { useQuestionPreviewAPI } from "@/app/hooks/api_hooks/Group/useQuestionPreviewAPI";
-import { useSurveyDetailsAPI } from "@/app/hooks/api_hooks/Group/useSurveyDetailsAPI";
-import { useOrganizationDetailsAPI } from "@/app/hooks/api_hooks/user/useOrganizationDetailsAPI";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ImagePreviewComponent from "./ImagePreviewComponent";
 import MultipleOptionComponent from "./MultipleOptionComponent";
@@ -16,20 +14,18 @@ const QuestionPreviewComponent = () => {
     useQuestionPreviewAPI();
   const navigate = useNavigate();
 
-  const { execute: fetchServeyDetails, serveyDetails } = useSurveyDetailsAPI();
-  const { execute: fetchOrganizationDetailsAPI, organization } =
-    useOrganizationDetailsAPI();
-
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const [prevFlage, setPrevFlage] = useState<boolean>(true);
 
-  const [isExpanded, setIsExpanded] = useState(false);
-  const maxLength = 100; // Maximum length for truncated text
+  // const [isExpanded, setIsExpanded] = useState(false);
+  // const maxLength = 100; // Maximum length for truncated text
 
-  const toggleExpansion = () => {
-    setIsExpanded(!isExpanded);
-  };
+  // const toggleExpansion = () => {
+  //   setIsExpanded(!isExpanded);
+  // };
+  const prevQuestionDetailsData: any =
+    prevQuestionDetails && (prevQuestionDetails?.questions as any);
 
   useEffect(() => {
     // Detect if the device is mobile or not
@@ -44,27 +40,31 @@ const QuestionPreviewComponent = () => {
       setPrevFlage(true);
     }
   }, []);
-
+  const isCalled = useRef(false); // Track whether the function has been called
   useEffect(() => {
-    const survey_id = params.get("survey_id");
-    const group_id = params.get("group_id");
-    if (group_id && survey_id) {
-      fetchQuestionDetails(group_id, survey_id);
+    if (!isCalled.current) {
+      const survey_id = params.get("survey_id");
+      if (survey_id) {
+        fetchQuestionDetails(survey_id);
+      }
+      isCalled.current = true; // Mark as called
     }
-  }, [params.get("survey_id")]);
+  }, [isCalled]);
 
   const handleContinue = () => {
-    if (currentQuestionIndex < prevQuestionDetails?.length - 1) {
+    if (currentQuestionIndex < prevQuestionDetailsData?.length - 1) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     }
   };
   const handlePreviews = () => {
-    if (currentQuestionIndex < prevQuestionDetails?.length) {
+    if (currentQuestionIndex < prevQuestionDetailsData?.length) {
       setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
     }
   };
 
-  const currentQuestion = prevQuestionDetails[currentQuestionIndex];
+  const currentQuestion =
+    prevQuestionDetailsData?.length > 0 &&
+    prevQuestionDetailsData[currentQuestionIndex];
 
   const renderQuestionComponent = () => {
     switch (currentQuestion?.question_type_id) {
@@ -104,14 +104,11 @@ const QuestionPreviewComponent = () => {
     }
   };
 
-  useEffect(() => {
-    fetchServeyDetails(params.get("survey_id"));
-    fetchOrganizationDetailsAPI();
-  }, []);
-
   const handelSubmit = () => {
     navigate(`/thankyou`);
   };
+
+  console.log(prevQuestionDetails, "SDdsd");
 
   return (
     <div className="">
@@ -126,9 +123,9 @@ const QuestionPreviewComponent = () => {
             <div className="col-span-4">
               <div className="mb-4">
                 <div className="h-20 w-20 rounded-full bg-[#D9D9D9] flex items-center justify-center relative overflow-hidden cursor-pointer">
-                  {organization?.icon && (
+                  {prevQuestionDetails?.icon && (
                     <img
-                      src={organization?.icon}
+                      src={prevQuestionDetails?.icon}
                       alt="Company Logo"
                       className="h-full w-full object-cover rounded-full cursor-pointer"
                     />
@@ -136,17 +133,17 @@ const QuestionPreviewComponent = () => {
                 </div>
               </div>
               <h3 className="font-medium text-base">
-                {serveyDetails?.survey_name}
+                {prevQuestionDetails?.survey_name}
               </h3>
               <p className="text-sm my-3 text-[#475467]">
-                {serveyDetails?.survey_description}
+                {prevQuestionDetails?.survey_description}
               </p>
             </div>
           </div>
           <div className="col-span-2">
             <p className="text-xs ">
               Question {currentQuestionIndex + 1} to{" "}
-              {prevQuestionDetails?.length}
+              {prevQuestionDetailsData?.length}
             </p>
             <div className="h-auto bg-[#4754670D] p-5 rounded-xl flex flex-col gap-4 mt-2">
               <p className="text-sm text-[#333333]">
@@ -172,7 +169,8 @@ const QuestionPreviewComponent = () => {
                     Back
                   </button>
                 )}
-                {prevQuestionDetails?.length === currentQuestionIndex + 1 ? (
+                {prevQuestionDetailsData?.length ===
+                currentQuestionIndex + 1 ? (
                   <button
                     type="submit"
                     onClick={handelSubmit}
@@ -199,9 +197,9 @@ const QuestionPreviewComponent = () => {
             <div>
               <div className="">
                 <div className="h-20 w-20 rounded-full bg-[#D9D9D9] flex items-center justify-center relative overflow-hidden cursor-pointer">
-                  {organization?.icon && (
+                  {prevQuestionDetails?.icon && (
                     <img
-                      src={organization?.icon}
+                      src={prevQuestionDetails?.icon}
                       alt="Company Logo"
                       className="h-full w-full object-cover rounded-full cursor-pointer"
                     />
@@ -209,27 +207,16 @@ const QuestionPreviewComponent = () => {
                 </div>
               </div>
               <h3 className="font-bold text-xl my-3">
-                {serveyDetails?.survey_name}
+                {prevQuestionDetails?.survey_name}
               </h3>
               <p className="text-sm my-3 text-[#475467] font-normal">
-                {isExpanded
-                  ? serveyDetails?.survey_description
-                  : serveyDetails?.survey_description?.slice(0, 100)}
-                {serveyDetails?.survey_description?.length > maxLength &&
-                  !isExpanded && (
-                    <span
-                      onClick={toggleExpansion}
-                      className="text-sm text-[#0C6243] font-medium underline cursor-pointer"
-                    >
-                      {isExpanded ? "Read Less" : "Read More"} ...
-                    </span>
-                  )}
+                {prevQuestionDetails?.survey_description}
               </p>
             </div>
             <div>
               <p className="text-xs mt-3">
                 Question {currentQuestionIndex + 1} to{" "}
-                {prevQuestionDetails?.length}
+                {prevQuestionDetailsData?.length}
               </p>
               <div className="h-auto bg-[#4754670D] p-5 rounded-xl flex flex-col gap-4 mt-2">
                 <p className="text-sm text-[#333333] font-medium">
@@ -257,7 +244,8 @@ const QuestionPreviewComponent = () => {
                       Back
                     </button>
                   )}
-                  {prevQuestionDetails?.length === currentQuestionIndex + 1 ? (
+                  {prevQuestionDetailsData?.length ===
+                  currentQuestionIndex + 1 ? (
                     <button
                       type="submit"
                       onClick={handelSubmit}

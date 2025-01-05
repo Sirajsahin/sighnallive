@@ -9,9 +9,6 @@ import App from "../../App";
 
 import CampaignSurveyPageIndex from "@/components/rendarChildren/CampaignSurveyPageIndex";
 import LoginLayoutPage from "@/components/rendarChildren/LoginLayoutPage";
-import CreateFeedbackGroupComponent from "@/components/routes/auth_routes/CreateFeedbackGroupComponent";
-import CreateSurveyStepComponent from "@/components/routes/auth_routes/CreateSurveyStepComponent";
-import FeedbackCampaignSurveyComponent from "@/components/routes/auth_routes/FeedbackCampaignSurveyComponent";
 import QuestionPreviewComponent from "@/components/routes/auth_routes/QuestionPreviewComponent";
 import ThankyouPage from "@/components/routes/auth_routes/ThankyouPage";
 import Login from "@/components/shared/Login";
@@ -19,7 +16,6 @@ import Organaization from "@/components/shared/Organaization";
 import OrganaizationListComponent from "@/components/shared/OrganaizationListComponent";
 import UserProfile from "@/components/shared/UserProfile";
 import { useRouter } from "../hooks/useRouter";
-import LiveCampaignPageComponent from "@/components/routes/auth_routes/LiveCampaignPageComponent";
 
 export interface IRouterProps {}
 
@@ -60,10 +56,6 @@ const Router: React.FC<IRouterProps> = () => {
       loader: redirectIfNotAuthenticated,
       children: [
         {
-          path: getRouteKey("HOME_PAGE", "path"),
-          element: <CreateFeedbackGroupComponent />,
-        },
-        {
           path: getRouteKey("USER_PROFILE", "path"),
           element: <UserProfile />,
         },
@@ -77,20 +69,8 @@ const Router: React.FC<IRouterProps> = () => {
           element: <CampaignSurveyPageIndex />,
           children: [
             {
-              path: getRouteKey("CAMPAIGN_PAGE", "path"),
-              element: <FeedbackCampaignSurveyComponent />,
-            },
-            {
-              path: getRouteKey("CREATE_SURVEY", "path"),
-              element: <CreateSurveyStepComponent />,
-            },
-            {
               path: getRouteKey("SURVEY_PREVIEW", "path"),
               element: <QuestionPreviewComponent />,
-            },
-            {
-              path: getRouteKey("LIVE_PAGE", "path"),
-              element: <LiveCampaignPageComponent />,
             },
           ],
         },
