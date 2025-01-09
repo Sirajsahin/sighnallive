@@ -7,6 +7,10 @@ export const USER_LOGIN_APIS: SighnalAuthAPIS = {
     baseURL: `${BASE_URL}/org/google/signup/`,
     params: {},
   },
+  USER_RESPONSE_API: {
+    baseURL: `${BASE_URL}/survey/save-response/`,
+    params: {},
+  },
   SELECT_ORG_API: {
     baseURL: `${BASE_URL}/org/select-organisation/`,
     params: {},

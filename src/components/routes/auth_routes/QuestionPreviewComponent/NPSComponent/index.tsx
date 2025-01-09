@@ -1,13 +1,26 @@
 import { useUtils } from "@/app/hooks/useUtils";
+import {
+  IuserResponse,
+  setUserResponse,
+} from "@/app_redux/reducers/slice/auth/survey_slice";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 
-const NPSComponent = ({ data, flage }) => {
+const NPSComponent = ({ data, flage, questionId }) => {
   const { splitEmojiAndText } = useUtils();
+  const dispatch = useDispatch();
 
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
-  const handleOptionClick = (option: number) => {
+  const handleOptionClick = (option: number, item: string) => {
     setSelectedOption(option);
+
+    const constructedBody: IuserResponse = {
+      question_id: questionId,
+      response: item,
+    };
+
+    dispatch(setUserResponse({ data: [constructedBody] }));
   };
 
   return (
@@ -23,7 +36,7 @@ const NPSComponent = ({ data, flage }) => {
                 ? "bg-[#0C6243] text-white border"
                 : "bg-white text-[#333333]"
             }`}
-            onClick={() => handleOptionClick(index)}
+            onClick={() => handleOptionClick(index, option)}
           >
             <p className={`text-2xl ${!flage && "bg-white rounded-md px-1"}`}>
               {splitEmojiAndText(option)?.emoji}

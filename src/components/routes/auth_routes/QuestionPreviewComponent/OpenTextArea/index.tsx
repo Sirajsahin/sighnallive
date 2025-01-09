@@ -1,12 +1,29 @@
+import {
+  IuserResponse,
+  setUserResponse,
+} from "@/app_redux/reducers/slice/auth/survey_slice";
 import TextareaComponent from "@/components/ui/TextareaComponent";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 
-const OpenTextArea = () => {
+const OpenTextArea = ({ questionId }) => {
+  const dispatch = useDispatch();
+
   const formHook = useForm<any>({
     defaultValues: {
       question_details: null,
     },
   });
+
+  useEffect(() => {
+    const constructedBody: IuserResponse = {
+      question_id: questionId,
+      response: formHook.watch("question_details"),
+    };
+
+    dispatch(setUserResponse({ data: [constructedBody] }));
+  }, [formHook.watch("question_details")]);
 
   return (
     <>

@@ -7,6 +7,16 @@ import NPSComponent from "./NPSComponent";
 import OpenTextArea from "./OpenTextArea";
 import OptionComponent from "./OptionComponent";
 import RatingComponent from "./RatingComponent";
+import { useRouter } from "@/app/hooks/useRouter";
+import useRouteInfo from "@/app/hooks/useRouteInfo";
+import {
+  ISurvetSliceState,
+  IuserResponse,
+  IUserResponseProps,
+  setPayloadData,
+} from "@/app_redux/reducers/slice/auth/survey_slice";
+import { useDispatch } from "react-redux";
+import { useSurveyResponse } from "@/app/hooks/api_hooks/Group/useSurveyResponse";
 
 const QuestionPreviewComponent = () => {
   const [params, _setparams] = useSearchParams();
@@ -14,10 +24,18 @@ const QuestionPreviewComponent = () => {
     useQuestionPreviewAPI();
   const navigate = useNavigate();
 
+  const { execute: submitResponse } = useSurveyResponse();
+
+  const { getRouteKey } = useRouter();
+  const { userResponse, payloadData } = useRouteInfo(
+    getRouteKey("HOME_PAGE", "id")
+  )?.routeState?.state as ISurvetSliceState;
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const [prevFlage, setPrevFlage] = useState<boolean>(true);
 
+  const dispatch = useDispatch();
   // const [isExpanded, setIsExpanded] = useState(false);
   // const maxLength = 100; // Maximum length for truncated text
 
@@ -52,6 +70,15 @@ const QuestionPreviewComponent = () => {
   }, [isCalled]);
 
   const handleContinue = () => {
+    const isQuestionAvalable: IuserResponse[] = userResponse?.filter(
+      (item) => item.question_id === currentQuestion?.question_id
+    );
+    const constructedBody: IuserResponse = {
+      question_id: isQuestionAvalable[0]?.question_id,
+      response: isQuestionAvalable[0]?.response,
+    };
+    dispatch(setPayloadData({ data: [...payloadData, constructedBody] }));
+
     if (currentQuestionIndex < prevQuestionDetailsData?.length - 1) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     }
@@ -61,7 +88,7 @@ const QuestionPreviewComponent = () => {
       setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
     }
   };
-
+  // console.log(userResponse, "userResponse");
   const currentQuestion =
     prevQuestionDetailsData?.length > 0 &&
     prevQuestionDetailsData[currentQuestionIndex];
@@ -69,26 +96,44 @@ const QuestionPreviewComponent = () => {
   const renderQuestionComponent = () => {
     switch (currentQuestion?.question_type_id) {
       case "single_choice":
-        return <OptionComponent data={currentQuestion?.options} />;
+        return (
+          <OptionComponent
+            data={currentQuestion?.options}
+            questionId={currentQuestion?.question_id}
+          />
+        );
       case "multiple_choice":
-        return <MultipleOptionComponent data={currentQuestion?.options} />;
+        return (
+          <MultipleOptionComponent
+            data={currentQuestion?.options}
+            questionId={currentQuestion?.question_id}
+          />
+        );
       case "mood_scale":
-        return <NPSComponent data={currentQuestion?.mood} flage={prevFlage} />;
+        return (
+          <NPSComponent
+            data={currentQuestion?.mood}
+            flage={prevFlage}
+            questionId={currentQuestion?.question_id}
+          />
+        );
       case "rating_scale":
         return (
           <RatingComponent
             data={currentQuestion?.rating_scale}
             flage={prevFlage}
+            questionId={currentQuestion?.question_id}
           />
         );
       case "open_text_response":
-        return <OpenTextArea />;
+        return <OpenTextArea questionId={currentQuestion?.question_id} />;
       case "image_single_choice":
         return (
           <ImagePreviewComponent
             data={currentQuestion?.image}
             flage={prevFlage}
             type={false}
+            questionId={currentQuestion?.question_id}
           />
         );
       case "image_multiple_choice":
@@ -97,6 +142,7 @@ const QuestionPreviewComponent = () => {
             data={currentQuestion?.image}
             flage={prevFlage}
             type={true}
+            questionId={currentQuestion?.question_id}
           />
         );
       default:
@@ -105,10 +151,38 @@ const QuestionPreviewComponent = () => {
   };
 
   const handelSubmit = () => {
-    navigate(`/thankyou`);
+    const actualData = [...payloadData]; // Create a shallow copy of payloadData
+    const userResponseToAdd = userResponse[0];
+
+    // Check for uniqueness based on a key, e.g., `question_id`
+    const isAlreadyPresent = actualData.some(
+      (item) => item.question_id === userResponseToAdd.question_id
+    );
+
+    if (!isAlreadyPresent) {
+      actualData.push(userResponseToAdd);
+    }
+
+    const constructed: IUserResponseProps = {
+      mobile: "6290318957",
+      responses: actualData,
+    };
+
+    submitResponse(constructed, params.get("survey_id")).then(({ status }) => {
+      if (status) {
+        navigate(`/thankyou`);
+      }
+    });
+    //
   };
 
-  console.log(prevQuestionDetails, "SDdsd");
+  const isDisableButton = () => {
+    const isQuestionAvalable: IuserResponse[] = userResponse?.filter(
+      (item) => item.question_id === currentQuestion?.question_id
+    );
+    console.log(isQuestionAvalable, "isQuestionAvalable");
+    return isQuestionAvalable?.length > 0 ? false : true;
+  };
 
   return (
     <div className="">
@@ -142,7 +216,7 @@ const QuestionPreviewComponent = () => {
           </div>
           <div className="col-span-2">
             <p className="text-xs ">
-              Question {currentQuestionIndex + 1} to{" "}
+              Question {currentQuestionIndex + 1} to &nbsp;
               {prevQuestionDetailsData?.length}
             </p>
             <div className="h-auto bg-[#4754670D] p-5 rounded-xl flex flex-col gap-4 mt-2">
@@ -173,8 +247,9 @@ const QuestionPreviewComponent = () => {
                 currentQuestionIndex + 1 ? (
                   <button
                     type="submit"
+                    disabled={isDisableButton()}
                     onClick={handelSubmit}
-                    className="inline-flex justify-center rounded-md bg-[#333333] px-4 py-2 text-sm font-semibold text-white cursor-pointer border-transparent"
+                    className={`${isDisableButton() ? "bg-gray-400" : "bg-[#333333]"} inline-flex justify-center rounded-md bg-[#333333] px-4 py-2 text-sm font-semibold text-white cursor-pointer border-transparent`}
                   >
                     Submit
                   </button>
@@ -182,7 +257,8 @@ const QuestionPreviewComponent = () => {
                   <button
                     type="submit"
                     onClick={handleContinue}
-                    className="inline-flex justify-center rounded-md bg-[#333333] px-4 py-2 text-sm font-semibold text-white cursor-pointer border"
+                    disabled={isDisableButton()}
+                    className={`inline-flex justify-center rounded-md ${isDisableButton() ? "bg-gray-400" : "bg-[#333333]"} px-4 py-2 text-sm font-semibold text-white cursor-pointer border`}
                   >
                     Continue
                   </button>
@@ -249,7 +325,8 @@ const QuestionPreviewComponent = () => {
                     <button
                       type="submit"
                       onClick={handelSubmit}
-                      className="inline-flex justify-center rounded-md bg-[#333333] px-4 py-2 text-sm font-semibold text-white cursor-pointer border-transparent"
+                      disabled={isDisableButton()}
+                      className={`inline-flex justify-center rounded-md ${isDisableButton() ? "bg-gray-400" : "bg-[#333333]"} px-4 py-2 text-sm font-semibold text-white cursor-pointer border-transparent`}
                     >
                       Submit
                     </button>
@@ -257,7 +334,7 @@ const QuestionPreviewComponent = () => {
                     <button
                       type="submit"
                       onClick={handleContinue}
-                      className="inline-flex justify-center rounded-md bg-[#333333] px-4 py-2 text-sm font-semibold text-white cursor-pointer border-transparent"
+                      className={`inline-flex justify-center ${isDisableButton() ? "bg-gray-400" : "bg-[#333333]"} rounded-md px-4 py-2 text-sm font-semibold text-white cursor-pointer border-transparent`}
                     >
                       Continue
                     </button>
