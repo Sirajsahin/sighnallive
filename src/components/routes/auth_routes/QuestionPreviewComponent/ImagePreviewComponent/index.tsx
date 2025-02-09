@@ -12,7 +12,6 @@ const ImagePreviewComponent = ({ data, flage, type, questionId }) => {
   const [imageSelection, setImageSelection] = useState<string[]>(null);
 
   const handleSelect = (id: number, item: string) => {
-    // console.log(item, "ddffd");
     if (type) {
       // Multiple selection mode
       if (selected.includes(id)) {
@@ -26,14 +25,27 @@ const ImagePreviewComponent = ({ data, flage, type, questionId }) => {
       // Single selection mode
       setSelected([id]);
       setImageSelection([item]);
-    }
-    const constructedBody: IuserResponse = {
-      question_id: questionId,
-      response: imageSelection?.join("||"),
-    };
+      const constructedBody: IuserResponse = {
+        question_id: questionId,
+        response: item,
+      };
 
-    dispatch(setUserResponse({ data: [constructedBody] }));
+      dispatch(setUserResponse({ data: [constructedBody] }));
+    }
   };
+
+  useEffect(() => {
+    if (imageSelection?.length > 1) {
+      const constructedBody: IuserResponse = {
+        question_id: questionId,
+        response: imageSelection?.join(","),
+      };
+
+      dispatch(setUserResponse({ data: [constructedBody] }));
+    } else {
+      dispatch(setUserResponse({ data: [] }));
+    }
+  }, [imageSelection]);
 
   useEffect(() => {
     setSelected([]);

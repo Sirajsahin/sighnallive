@@ -58,6 +58,7 @@ const QuestionPreviewComponent = () => {
       setPrevFlage(true);
     }
   }, []);
+
   const isCalled = useRef(false); // Track whether the function has been called
   useEffect(() => {
     if (!isCalled.current) {
@@ -164,7 +165,7 @@ const QuestionPreviewComponent = () => {
     }
 
     const constructed: IUserResponseProps = {
-      mobile: "6290318957",
+      mobile: prevQuestionDetails?.mobile,
       responses: actualData,
     };
 
@@ -334,6 +335,7 @@ const QuestionPreviewComponent = () => {
                     <button
                       type="submit"
                       onClick={handleContinue}
+                      disabled={isDisableButton()}
                       className={`inline-flex justify-center ${isDisableButton() ? "bg-gray-400" : "bg-[#333333]"} rounded-md px-4 py-2 text-sm font-semibold text-white cursor-pointer border-transparent`}
                     >
                       Continue

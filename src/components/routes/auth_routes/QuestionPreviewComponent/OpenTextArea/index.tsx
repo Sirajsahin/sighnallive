@@ -17,12 +17,14 @@ const OpenTextArea = ({ questionId }) => {
   });
 
   useEffect(() => {
-    const constructedBody: IuserResponse = {
-      question_id: questionId,
-      response: formHook.watch("question_details"),
-    };
+    if (formHook.watch("question_details")) {
+      const constructedBody: IuserResponse = {
+        question_id: questionId,
+        response: formHook.watch("question_details"),
+      };
 
-    dispatch(setUserResponse({ data: [constructedBody] }));
+      dispatch(setUserResponse({ data: [constructedBody] }));
+    }
   }, [formHook.watch("question_details")]);
 
   return (

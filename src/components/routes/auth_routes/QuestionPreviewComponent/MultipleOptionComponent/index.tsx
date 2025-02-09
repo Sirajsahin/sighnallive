@@ -21,12 +21,16 @@ const MultipleOptionComponent = ({ data, questionId }) => {
   };
 
   useEffect(() => {
-    const constructedBody: IuserResponse = {
-      question_id: questionId,
-      response: selectedItems?.join(","),
-    };
+    if (selectedItems?.length > 0) {
+      const constructedBody: IuserResponse = {
+        question_id: questionId,
+        response: selectedItems?.join(","),
+      };
 
-    dispatch(setUserResponse({ data: [constructedBody] }));
+      dispatch(setUserResponse({ data: [constructedBody] }));
+    } else {
+      dispatch(setUserResponse({ data: [] }));
+    }
   }, [selectedItems]);
 
   return (
