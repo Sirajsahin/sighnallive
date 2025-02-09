@@ -1,29 +1,29 @@
-const FIrstSectionComponent = () => {
+const FirstSectionComponent = () => {
   return (
-    <>
-      <div className="flex items-center justify-center mt-14">
-        <div className="flex flex-col items-center gap-2 ">
-          <h1 className=" text-3xl sm:text-5xl  font-medium  ">
-            Sighnal Reveals What
-          </h1>
-          <h1 className="text-3xl sm:text-5xl font-medium ">
-            Others Can’t Hear.
-          </h1>
-          <p className=" text-base sm:text-xl font-normal">
-            Delivering insights that transform customer feedback into actionable
-            data.
-          </p>
+    <section className="w-full flex flex-col items-center justify-center px-4 sm:px-8 ">
+      {/* Text Section */}
+      <div className="text-center mt-10 sm:mt-14 max-w-4xl">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-semibold leading-tight">
+          Sighnal Reveals What
+        </h1>
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-semibold leading-tight">
+          Others Can’t Hear.
+        </h1>
+        <p className="text-sm sm:text-lg md:text-xl font-normal mt-4 text-gray-700">
+          Delivering insights that transform customer feedback into actionable
+          data.
+        </p>
+      </div>
+
+      {/* Image / Background Section */}
+      <div className="w-full my-6 sm:my-10 lg:my-14">
+        <div className="bg-[#F5F5F5] rounded-[30px] flex justify-center items-center h-[200px] sm:h-[350px] md:h-[450px] lg:h-[550px] xl:h-[600px] w-full  mx-auto">
+          {/* Placeholder for Image or Content */}
+          {/* <img src="your-image.jpg" alt="Visualization" className="max-w-full h-auto rounded-lg shadow-lg" /> */}
         </div>
       </div>
-      <div className="my-5 xl:my-10 2xl:my-14">
-        <div className="bg-[#F5F5F5] rounded-[40px] flex justify-center items-center h-[300px] sm:h-[500px]">
-          {/* <div className="w-[400px] h-auto rounded-lg bg-gray-300">
-            <div className="w-[80%] h-[300px] "></div>
-          </div> */}
-        </div>
-      </div>
-    </>
+    </section>
   );
 };
 
-export default FIrstSectionComponent;
+export default FirstSectionComponent;

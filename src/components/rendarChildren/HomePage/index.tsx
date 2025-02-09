@@ -12,17 +12,27 @@ function Home() {
   return (
     <div>
       <NavbarComponent />
-      <div className="m-3 sm:m-14 xl:mx-20 xl:my-14 2xl:mx-28 2xl:my-18">
+
+      {/* Wrapper for the first and second section */}
+      <div className="mx-3 sm:mx-14 xl:mx-20 2xl:mx-28 my-14 sm:my-14 xl:my-14 2xl:my-18">
         <FIrstSectionComponent />
         <SecondComponent />
       </div>
+
+      {/* Third and Fourth sections */}
       <ThirdSectionComponent />
       <FourthSectionComponent />
-      <div className="m-3 sm:m-14 xl:mx-20 xl:my-14 2xl:mx-28 2xl:my-18">
+
+      {/* Wrapper for Fifth Section */}
+      <div className="mx-3 sm:mx-14 xl:mx-20 2xl:mx-28 my-14 sm:my-14 xl:my-14 2xl:my-18">
         <FifthComponent />
       </div>
+
+      {/* Remaining sections */}
       <SixSectionComponent />
       <SeventhSectionComponent />
+
+      {/* Footer */}
       <Footer />
     </div>
   );
